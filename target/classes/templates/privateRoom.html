@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Приватная комната</title>
+    <link rel="stylesheet" th:href="@{/static/css/main.css}"/>
+
+    <!-- https://cdnjs.com/libraries/sockjs-client -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <!-- https://cdnjs.com/libraries/stomp.js/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+</head>
+<body>
+<div id="chat-container">
+    <div class="chat-header">
+        <div class="user-container">
+            <!--/*@thymesVar id="username" type=""*/-->
+            <span id="username" th:utext="${username}"></span>
+            <a th:href="@{/main}">Выйти из чата</a>
+        </div>
+        <h3>Приватная комната: <span id="namePrivateRoom" th:utext="${namePrivateRoom}"></span></h3>
+    </div>
+
+    <hr/>
+
+    <div id="connecting">Соединение устанавливается...</div>
+    <ul id="messageArea">
+
+        <li th:each="chatMessageForPrivateRoom : ${chatMessagesForPrivateRoom}">
+            <p><b>
+                <td style="color:blue; font-weight: bold" class="list" th:utext="${chatMessageForPrivateRoom.sender}"/>
+            </b>
+            <td class="list" th:utext="${chatMessageForPrivateRoom.content}"></td>
+            <form action="/privateRoom/{nameRoom}" method="post">
+                <div hidden>
+                    <label>
+                        <input type="text" th:name="idMessage" th:value="${chatMessageForPrivateRoom.id}" readonly>
+                    </label>
+                </div>
+                <span th:if="${thisUser}">
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+                <button type="submit">Удалить</button>
+            </span>
+            </form>
+            </p>
+        </li>
+
+    </ul>
+
+    <div>
+        <p class="lead" id="usersAttention"></p>
+    </div>
+
+    <form id="messageForm" name="messageForm">
+        <div class="input-message">
+            <input type="text" id="message" autocomplete="off"
+                   placeholder="Напишите сообщение..."/>
+            <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+            <button type="submit">Отправить</button>
+        </div>
+    </form>
+</div>
+
+<script th:src="@{/static/js/privateRoom.js}"></script>
+
+</body>
+</html>

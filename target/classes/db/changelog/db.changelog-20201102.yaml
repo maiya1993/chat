@@ -1,0 +1,146 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.changelog-20201102.yaml
+
+  - changeSet:
+      id: 1
+      author: username
+      changes:
+      - sql:
+          sql: DROP TABLE IF EXISTS rooms CASCADE
+      - sql:
+          sql: DROP TABLE IF EXISTS chat_message CASCADE
+      - sql:
+          sql: DROP TABLE IF EXISTS chat_message_for_private_room CASCADE
+      - sql:
+          sql: DROP TABLE IF EXISTS common_chat_message CASCADE
+      - sql:
+          sql: DROP TABLE IF EXISTS rooms_users CASCADE
+
+      - createTable:
+          tableName: rooms
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: id_room
+                  nullable: false
+            - column:
+                name: name
+                type: varchar(255)
+                constraints:
+                  nullable: false
+            - column:
+                name: is_private
+                type: boolean
+                constraints:
+                  nullable: false
+            - column:
+                name: user_id
+                type: BIGINT
+                constraints:
+                  foreignKeyName: id_rooms_usr
+                  references: usr(id)
+
+      - createTable:
+          tableName: chat_message
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: id_chat_message
+                  nullable: false
+            - column:
+                name: content
+                type: varchar(2048)
+            - column:
+                name: user_id
+                type: BIGINT
+                constraints:
+                  foreignKeyName: id_chat_message_usr
+                  references: usr(id)
+            - column:
+                name: sender
+                type: varchar(255)
+            - column:
+                name: type
+                type: integer
+
+      - createTable:
+          tableName: chat_message_for_private_room
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: id_chat_message_for_private_room
+                  nullable: false
+                  onDelete: CASCADE
+                  onUpdate: CASCADE
+
+            - column:
+                name: content
+                type: varchar(2048)
+            - column:
+                name: user_id
+                type: BIGINT
+                constraints:
+                  foreignKeyName: id_chat_message_for_private_room_usr
+                  references: usr(id)
+            - column:
+                name: sender
+                type: varchar(255)
+            - column:
+                name: type
+                type: integer
+
+      - createTable:
+          tableName: common_chat_message
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: id_common_chat_message
+                  nullable: false
+            - column:
+                name: content
+                type: varchar(2048)
+            - column:
+                name: user_id
+                type: BIGINT
+                constraints:
+                  foreignKeyName: id_common_chat_message_usr
+                  references: usr(id)
+            - column:
+                name: sender
+                type: varchar(255)
+            - column:
+                name: type
+                type: integer
+
+      - createTable:
+          tableName: rooms_users
+          columns:
+            - column:
+                name: room_id
+                type: BIGINT
+                autoIncrement: false
+                constraints:
+                  foreignKeyName: id_rooms_users_rooms
+                  references: rooms(id)
+            - column:
+                name: user_id
+                type: BIGINT
+                autoIncrement: false
+                constraints:
+                  foreignKeyName: id_rooms_users_usr
+                  references: usr(id)

@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.changelog-master.yaml
+
+  - changeSet:
+      id: 1
+      author: username
+      changes:
+      - sql:
+          sql: DROP TABLE IF EXISTS usr CASCADE
+      - sql:
+          sql: DROP TABLE IF EXISTS user_role CASCADE
+      - sql:
+          sql: DROP TABLE IF EXISTS msg CASCADE
+
+      - createTable:
+          tableName: usr
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: id_account
+                  nullable: false
+            - column:
+                name: active
+                type: boolean
+                constraints:
+                  nullable: false
+            - column:
+                name: password
+                type: varchar(255)
+                constraints:
+                  nullable: false
+            - column:
+                name: username
+                type: varchar(255)
+                constraints:
+                  unique: true
+                  nullable: false
+
+      - createTable:
+          tableName: msg
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: id_message
+                  nullable: false
+            - column:
+                name: filename
+                type: varchar(255)
+            - column:
+                name: tag
+                type: varchar(255)
+            - column:
+                name: text
+                type: varchar(2048)
+            - column:
+                name: user_id
+                type: BIGINT
+                constraints:
+                  foreignKeyName: id_msg_usr
+                  references: usr(id)
+
+      - createTable:
+          tableName: user_role
+          columns:
+            - column:
+                name: user_id
+                type: BIGINT
+                constraints:
+                  foreignKeyName: id_user_role_usr
+                  references: usr(id)
+            - column:
+                name: roles
+                type: varchar(255)
+
+  - changeSet:
+      id: 2
+      author: username
+      comment: "Create admin user"
+      changes:
+        - insert:
+            tableName: usr
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: active
+                  value: "true"
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: password
+                  value: "admin"
+
+        - insert:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  value: "1"
+              - column:
+                  name: roles
+                  value: "ADMIN"
+  - include:
+      file: db.changelog-20201102.yaml
+      relativeToChangelogFile: true
